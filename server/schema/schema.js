@@ -1,4 +1,4 @@
-import { buildSchema, GraphQLID, GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLString, } from "graphql";
+import { GraphQLID, GraphQLList, GraphQLObjectType, GraphQLSchema, GraphQLString, GraphQLNonNull, GraphQLFloat, GraphQLEnumType } from "graphql";
 //! sampledata
 //import { projects, clients } from '../sampleData.js'
 //! mongoose model
@@ -66,6 +66,73 @@ const RootQuery = new GraphQLObjectType({
     }
 });
 
+//* Mutation
+const mutation = new GraphQLObjectType({
+    name: 'Mutation',
+    fields: {
+        addClient: {
+            type: ClientType,
+            args: {
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                email: { type: new GraphQLNonNull(GraphQLString) },
+                phone: { type: new GraphQLNonNull(GraphQLString) },
+            },
+            resolve(parent, args) {
+                let client = new Client({
+                    name: args.name,
+                    email: args.email,
+                    phone: args.phone,
+                });
+                return client.save();
+            }
+        },
+        deleteClient: {
+            type: ClientType,
+            args: { id: { type: new GraphQLNonNull(GraphQLID) } },
+            resolve(parent, args) {
+                return Client.findOneAndDelete(args.id);
+            }
+        },
+        addProject: {
+            type: ProjectType,
+            args: {
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                description: { type: new GraphQLNonNull(GraphQLString) },
+                status: {
+                    type: new GraphQLEnumType({
+                        name: 'ProjectStatus', // must be unique value
+                        values: {
+                            //"Not Started", "In Progress", "Completed"
+                            'new': { value: 'Not Started' },
+                            'progress': { value: 'In Progress' },
+                            'completed': { value: 'Completed' },
+                        }
+                    }),
+                    defaultValue: 'Not Started'
+                },
+                clientId: { type: new GraphQLNonNull(GraphQLID) },
+            },
+            resolve(parent, args) {
+                let project = new Project({
+                    name: args.name,
+                    description: args.description,
+                    status: args.status,
+                    clientId: args.clientId,
+                });
+                return project.save();
+            }
+        },
+        deleteProject: {
+            type: ProjectType,
+            args: { id: { type: new GraphQLNonNull(GraphQLID) } },
+            resolve(parent, args) {
+                return Project.findOneAndDelete(args.id);
+            }
+        }
+    }
+});
+
 export default new GraphQLSchema({
     query: RootQuery,
+    mutation
 })
