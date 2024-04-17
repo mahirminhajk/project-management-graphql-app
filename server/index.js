@@ -21,10 +21,12 @@ app.use('/graphql', createHandler({
     schema: schema,
 }));
 
-app.get("/iql", (_req, res) => {
-    res.type("html")
-    res.end(ruruHTML({ endpoint: "/graphql" }))
-})
+if (process.env.NODE_ENV === 'development') {
+    app.get("/iql", (_req, res) => {
+        res.type("html")
+        res.end(ruruHTML({ endpoint: "/graphql" }))
+    })
+}
 
 app.listen(port, () => {
 
