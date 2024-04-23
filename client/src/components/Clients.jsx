@@ -26,7 +26,7 @@ function Clients() {
                     </thead>
                     <tbody>
                         {data.clients.map(client => (
-                            <ClientRow key={client.name} client={client} />
+                            <ClientRow key={client.id} client={client} />
                         ))}
                     </tbody>
                 </table>
