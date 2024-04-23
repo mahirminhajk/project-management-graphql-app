@@ -19,7 +19,6 @@ function ClientRow({ client }) {
     })
 
     const handleDelete = () => {
-        console.log(client.id);
         deleteClient();
     }
 
