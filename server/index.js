@@ -1,6 +1,7 @@
 import express from 'express';
 import * as dotenv from 'dotenv';
 import colors from 'colors'
+import cors from 'cors'
 
 import { createHandler } from "graphql-http/lib/use/express";
 import { ruruHTML } from "ruru/server";
@@ -15,6 +16,9 @@ const app = express();
 
 //* connect to db
 connectDB();
+
+//* cors
+app.use(cors())
 
 //* graphql
 app.use('/graphql', createHandler({
