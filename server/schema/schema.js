@@ -128,6 +128,34 @@ const mutation = new GraphQLObjectType({
             resolve(parent, args) {
                 return Project.findOneAndDelete(args.id);
             }
+        },
+        updateProject: {
+            type: ProjectType,
+            args: {
+                id: { type: new GraphQLNonNull(GraphQLID) },
+                name: { type: GraphQLString },
+                description: { type: GraphQLString },
+                status: {
+                    type: new GraphQLEnumType({
+                        name: 'ProjectStatusUpdate', // must be unique value
+                        values: {
+                            //"Not Started", "In Progress", "Completed"
+                            'new': { value: 'Not Started' },
+                            'progress': { value: 'In Progress' },
+                            'completed': { value: 'Completed' },
+                        }
+                    }),
+                },
+            },
+            resolve(parent, args) {
+                return Project.findByIdAndUpdate(args.id, {
+                    $set: {
+                        name: args.name,
+                        description: args.description,
+                        status: args.status,
+                    }
+                }, { new: true });
+            }
         }
     }
 });
